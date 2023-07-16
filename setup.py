@@ -41,4 +41,5 @@ setup(
         "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    install_requires=["graphviz==0.20"],
 )

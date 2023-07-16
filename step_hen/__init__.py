@@ -16,3 +16,4 @@ from step_hen.presentation import MonoidPresentation, InverseMonoidPresentation
 from step_hen.wordgraph import WordGraph
 from step_hen.schutzenbergergraph import SchutzenbergerGraph
 from step_hen.stephen import Stephen
+from step_hen.visualize import word_graph_to_dot

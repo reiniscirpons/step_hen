@@ -36,6 +36,7 @@ class WordGraph:
         """
         self.presn = presn
         self.nodes = [0]
+        self.parent = [0]
         self.edges: List[List[Union[int, None]]] = [
             [None] * len(self.presn.alphabet)
         ]
@@ -70,6 +71,7 @@ class WordGraph:
             self.edges[node][letter] = self.next_node
             result = self.next_node
             self.edges.append([None] * len(self.presn.alphabet))
+            self.parent.append(result)
             self.next_node += 1
         return result
 
@@ -179,6 +181,7 @@ class WordGraph:
             return
         if node1 > node2:
             node1, node2 = node2, node1
+        self.parent[node2] = node1
 
         for letter in range(len(self.presn.alphabet)):
             child2 = self.path(node2, letter)
