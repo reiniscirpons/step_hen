@@ -37,6 +37,7 @@ class SchutzenbergerGraph(WordGraph):
         :param presn: the inverse monoid presentation.
         :param rep: the representative.
         """
+        self.presn: InverseMonoidPresentation
         WordGraph.__init__(self, presn, rep)
 
     def target(self, node: int, letter: int) -> int:
@@ -70,8 +71,7 @@ class SchutzenbergerGraph(WordGraph):
             finite, there is no bound on the run time of this method.
         """
         self.run()
-        word = [self.presn.letter(x) for x in word]
-        return self.path(0, word) == self.path(0, self.rep)
+        return self.path(0, self.presn.word(word)) == self.path(0, self.rep)
 
     def __contains__(self, word: str) -> bool:
         r"""
@@ -93,8 +93,7 @@ class SchutzenbergerGraph(WordGraph):
             finite.
         """
         self.run()
-        word = [self.presn.letter(letter) for letter in word]
-        return self.path(0, word) is not None
+        return self.path(0, self.presn.word(word)) is not None
 
     def equal_to(self, word: str) -> None:
         pass

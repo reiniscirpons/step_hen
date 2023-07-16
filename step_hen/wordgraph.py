@@ -36,8 +36,10 @@ class WordGraph:
         """
         self.presn = presn
         self.nodes = [0]
-        self.edges = [[None] * len(self.presn.alphabet)]
-        self.kappa = []
+        self.edges: List[List[Union[int, None]]] = [
+            [None] * len(self.presn.alphabet)
+        ]
+        self.kappa: List[Tuple[int, int]] = []
         self.next_node = 1
         self.rep = [self.presn.letter(a) for a in rep]
         current_node = 0
@@ -62,12 +64,14 @@ class WordGraph:
         :param letter: the edge label.
         :returns: An ``int``.
         """
-        if self.edges[node][letter] is None:
+        result = self.edges[node][letter]
+        if result is None:
             self.nodes.append(self.next_node)
             self.edges[node][letter] = self.next_node
+            result = self.next_node
             self.edges.append([None] * len(self.presn.alphabet))
             self.next_node += 1
-        return self.edges[node][letter]
+        return result
 
     def last_node_on_path(
         self, root: int, word: Union[List[int], int]
@@ -91,7 +95,7 @@ class WordGraph:
             root = node
         return (root, len(word))
 
-    def path(self, node: int, word: List[int]) -> int:
+    def path(self, node: int, word: Union[List[int], int]) -> Union[int, None]:
         """
         Returns the target node on the path starting at ``root`` labelled by
         ``word`` if such a node exists and ``None`` otherwise.
@@ -120,6 +124,7 @@ class WordGraph:
             )
             if node is None:
                 break
+            assert word1 is not None and word2 is not None
             self.elementary_expansion(node, word1, word2)
             assert (
                 self.path(node, word1) is not None
@@ -176,21 +181,21 @@ class WordGraph:
             node1, node2 = node2, node1
 
         for letter in range(len(self.presn.alphabet)):
-            if self.path(node2, letter) is not None:
-                if self.path(node1, letter) is None:
-                    self.edges[node1][letter] = self.path(node2, letter)
+            child2 = self.path(node2, letter)
+            if child2 is not None:
+                child1 = self.path(node1, letter)
+                if child1 is None:
+                    self.edges[node1][letter] = child2
                 else:
-                    self.kappa.append(
-                        (self.path(node1, letter), self.path(node2, letter))
-                    )
+                    self.kappa.append((child1, child2))
         for node in self.nodes:
             for letter in range(len(self.presn.alphabet)):
                 if self.path(node, letter) == node2:
                     self.edges[node][letter] = node1
         self.kappa = [
-            [node1, l] if k == node2 else [k, l] for k, l in self.kappa
+            (node1, l) if k == node2 else (k, l) for k, l in self.kappa
         ]
         self.kappa = [
-            [k, node1] if l == node2 else [k, l] for k, l in self.kappa
+            (k, node1) if l == node2 else (k, l) for k, l in self.kappa
         ]
         self.nodes.remove(node2)

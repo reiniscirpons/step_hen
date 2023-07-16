@@ -17,7 +17,7 @@ implemented in this package in :py:class:`stephen.wordgraph.WordGraph`,
 
 # pylint: disable=bad-option-value, consider-using-f-string
 
-from typing import List
+from typing import List, Tuple
 
 
 class MonoidPresentation:
@@ -32,7 +32,7 @@ class MonoidPresentation:
         Constructs an empty presentation.
         """
         self.alphabet = ""
-        self.relations = []
+        self.relations: List[Tuple[List[int], List[int]]] = []
 
     def letter(self, string: str) -> int:
         """
@@ -118,9 +118,7 @@ class MonoidPresentation:
         if not isinstance(word2, str):
             raise TypeError("the argument <word2> must be a string")
 
-        word1 = [self.letter(x) for x in word1]
-        word2 = [self.letter(x) for x in word2]
-        self.relations.append((word1, word2))
+        self.relations.append((self.word(word1), self.word(word2)))
 
 
 class InverseMonoidPresentation(MonoidPresentation):
